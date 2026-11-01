@@ -4648,6 +4648,171 @@ static void AdjustLinkColor() {
         qApp->setPalette(new_pal);
 }
 
+/**
+ * Eden 焕新：在所选主题的样式表之上追加一套统一的覆盖样式。
+ * 上游主题（尤其是 colorful_dark）并未定义游戏库相关控件的外观，
+ * 这里用品牌蓝 #4F7BFF 统一卡片、搜索栏、状态栏与滚动条的观感。
+ */
+static QString EdenOverlayStyle() {
+    return QStringLiteral(R"QSS(
+QMainWindow, QDialog {
+    background-color: #13151B;
+}
+
+QMenuBar {
+    background-color: #13151B;
+    color: #E6E9F0;
+}
+QMenuBar::item {
+    padding: 4px 10px;
+    background: transparent;
+    border-radius: 4px;
+}
+QMenuBar::item:selected {
+    background: #232838;
+}
+QMenu {
+    background-color: #1A1D25;
+    color: #E6E9F0;
+    border: 1px solid #2A2F3D;
+    padding: 6px;
+}
+QMenu::item {
+    padding: 6px 22px 6px 16px;
+    border-radius: 6px;
+}
+QMenu::item:selected {
+    background: #2A3555;
+}
+QMenu::separator {
+    height: 1px;
+    background: #2A2F3D;
+    margin: 4px 8px;
+}
+
+QToolBar {
+    background: #13151B;
+    border: none;
+    spacing: 6px;
+    padding: 4px;
+}
+
+QStatusBar {
+    background: #101218;
+    color: #98A1B3;
+    border-top: 1px solid #20242F;
+}
+QStatusBar::item {
+    border: none;
+}
+
+QLineEdit {
+    background: #1A1D25;
+    color: #E6E9F0;
+    border: 1px solid #2A2F3D;
+    border-radius: 8px;
+    padding: 5px 10px;
+    selection-background-color: #4F7BFF;
+}
+QLineEdit:focus {
+    border: 1px solid #4F7BFF;
+}
+
+QTreeView, QListView, QTableView {
+    background-color: #13151B;
+    border: none;
+    outline: none;
+    alternate-background-color: #171A22;
+}
+QTreeView::item, QListView::item {
+    border-radius: 6px;
+    padding: 4px;
+}
+QTreeView::item:hover, QListView::item:hover {
+    background: #1E2230;
+}
+QTreeView::item:selected, QListView::item:selected {
+    background: #2C3A66;
+    color: #FFFFFF;
+}
+QHeaderView::section {
+    background: #13151B;
+    color: #98A1B3;
+    border: none;
+    border-bottom: 1px solid #20242F;
+    padding: 6px;
+    font-weight: 600;
+}
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 10px;
+    margin: 2px;
+}
+QScrollBar::handle:vertical {
+    background: #31384A;
+    min-height: 28px;
+    border-radius: 5px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #4F7BFF;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+QScrollBar:horizontal {
+    background: transparent;
+    height: 10px;
+    margin: 2px;
+}
+QScrollBar::handle:horizontal {
+    background: #31384A;
+    min-width: 28px;
+    border-radius: 5px;
+}
+QScrollBar::handle:horizontal:hover {
+    background: #4F7BFF;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: transparent;
+}
+
+QPushButton {
+    background: #212633;
+    color: #E6E9F0;
+    border: 1px solid #2A2F3D;
+    border-radius: 8px;
+    padding: 6px 14px;
+    min-height: 18px;
+}
+QPushButton:hover {
+    background: #2A3140;
+    border-color: #3A4257;
+}
+QPushButton:pressed {
+    background: #1B2029;
+}
+QPushButton:default, QPushButton:checked {
+    background: #4F7BFF;
+    border-color: #4F7BFF;
+    color: #FFFFFF;
+}
+
+QToolTip {
+    background-color: #1A1D25;
+    color: #E6E9F0;
+    border: 1px solid #4F7BFF;
+    padding: 4px 8px;
+}
+)QSS");
+}
+
 void MainWindow::UpdateUITheme() {
     const QString default_theme = QString::fromUtf8(UISettings::themes[size_t(UISettings::default_theme)].second);
     QString current_theme = QString::fromStdString(UISettings::values.theme);
@@ -4694,6 +4859,10 @@ void MainWindow::UpdateUITheme() {
         qApp->setStyleSheet({});
         setStyleSheet({});
     }
+
+    // 在主题样式之后追加焕新覆盖样式（后写入的规则优先级更高）
+    qApp->setStyleSheet(qApp->styleSheet() + EdenOverlayStyle());
+    setStyleSheet(styleSheet() + EdenOverlayStyle());
 
 #ifdef _WIN32
     RemoveTitlebarFilter();
