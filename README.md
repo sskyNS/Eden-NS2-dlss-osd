@@ -1,5 +1,8 @@
 # Eden NS2
 
+<img width="1283" height="804" alt="image" src="https://github.com/user-attachments/assets/122da4a0-c352-4f0c-83e5-b7ea9923c74e" />
+
+
 A fork of the [Eden](https://git.eden-emu.dev/eden-emu/eden) Nintendo Switch emulator that runs
 Nintendo Switch 2 games.
 
